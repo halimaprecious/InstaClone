@@ -1,54 +1,76 @@
-import uuid
+
 from django.db import models
 from django.contrib.auth.models import User
-from tinymce.models import HTMLField
-from django.db.models.signals import post_save,post_delete
-from django.urls import reverse
 
 # Create your models here.
 
 # Profile
 # Image/Post
 # Comment
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE )
+    profile_photo= models.ImageField(upload_to='profiles/',null=True , default='pro.png')
+    bio= models.CharField(max_length=240, null=True)
+
+
+    def save_profile(self):
+        self.save()
+
+    @classmethod
+    def get_profile(cls):
+        profile = Profile.objects.all()
+        return profile
+
+    @classmethod
+    def find_profile(cls,search_term):
+        profile = Profile.objects.filter(user__username__icontains=search_term)
+        return profile
+
 
 class Post(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    pic_name = models.CharField(max_length=20)
-    picture = models.ImageField(upload_to='feed_images',blank=True)
-    caption = HTMLField() 
-    post_date = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
-    likes = models.IntegerField(default=0)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE,null=True)
+    picture = models.ImageField(upload_to='feed_images',null=True,)
+    caption = models.TextField(null=True) 
+    likes = models.PositiveIntegerField(default=0)
 
-    def get_absolute_url(self):
-        return reverse('post-details',args=[str(self.id)])
+
+    @classmethod
+    def get_images(cls):
+        images = Post.objects.all()
+        return images
 
     def __str__(self):
-        return f"{self.caption}"
+       return str(self.caption)
 
+class Comment(models.Model):
+    poster = models.ForeignKey(User, on_delete=models.CASCADE,null=True)
+    image = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments',null=True)
+    comment = models.CharField(max_length=200, null=True)
+
+    def __str__(self):
+        return self.comment
+
+    def save_comment(self):
+        self.save()
+
+    @classmethod
+    def get_comment(cls):
+        comment = Comment.objects.all()
+        return comment
 
 class Follow(models.Model):
-    follower = models.ForeignKey(User, on_delete=models.CASCADE,related_name='follower')
-    following = models.ForeignKey(User, on_delete=models.CASCADE,related_name='following')
+    users=models.ManyToManyField(User,related_name='follow')
+    current_user=models.ForeignKey(User,related_name='c_user',on_delete=models.CASCADE,null=True)
 
-    def __str__(self):
-        return f"{self.follower}"
+    @classmethod
+    def follow(cls,current_user,new):
+        friends,created=cls.objects.get_or_create(current_user=current_user)
+        friends.users.add(new)
+
+    @classmethod
+    def unfollow(cls,current_user,new):
+        friends,created=cls.objects.get_or_create(current_user=current_user)
+        friends.users.remove(new)
 
 
-# view followers posts
-class Stream(models.Model):
-    following = models.ForeignKey(User, on_delete=models.CASCADE,related_name='stream_following')
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    post = models.ForeignKey(Post,on_delete=models.CASCADE,null=True)
-    date = models.DateTimeField()
-
-    def add_post(sender, instance, *args, **kwargs):
-        post =instance
-        user = post.user
-        followers = Follow.objects.all().filter(following=user) 
-
-        for follower in followers:
-            stream =Stream(post=post,user=follower.follower,date=post.post_date,following=user)
-            stream.save()
-        # signal
-        post_save.connect(Stream.add_post, sender=Post)
