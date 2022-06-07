@@ -1,21 +1,42 @@
-{% load static %}
-
+{%load static%}
 {% block styles %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 {% endblock %}
-
-
-<nav class="navbar">
-    <div class="nav-wrapper">
-        <img src="{% static 'img/logo.PNG' %}" class="brand-img" alt="">
-        <input type="text" class="search-box" placeholder="search">
-        <div class="nav-items">
-            <img src="{% static 'img/home.PNG' %}" class="icon" alt="">
-            <img src="{% static 'img/messenger.PNG' %}" class="icon" alt="">
-            <img src="{% static 'img/add.PNG' %}" class="icon" alt="">
-            <img src="{% static 'img/explore.PNG' %}" class="icon" alt="">
-            <img src="{% static 'img/like.PNG' %}" class="icon" alt="">
-            <div class="icon user-profile"></div>
-        </div>
-    </div>
-</nav>
+<header class="main-header fixed-top">
+  <a href="{% url 'home' %}" class="brand-logo">
+      <h2 class="instagram-title" title="HomePage">Instagram</h2>
+  </a>
+  <div>
+      <form action="/search/" method="POST">
+          {% csrf_token %}
+          <div class="input-group mb-3">
+              <div class="input-group">
+                  <input type="text" class="form-control search-text" required
+                      name="username" id="search-text" placeholder="Search by username">
+                  <button class="btn btn-light search" id="button-addon2" type="submit">
+                      <i class="fas fa-search"></i>
+                  </button>
+              </div>
+          </div>
+      </form>
+  </div>
+  <nav class="main-nav">
+      <ul>
+          <li class="nav-items"><a href="{% url 'home' %}" title="HomePage" >
+              <img src="{% static 'img/home-house-svgrepo-com.svg' %}" title="HomePage" alt="" srcset="">
+          </a></li>
+          <li class="nav-items"><a href="/upload" >
+              <img src="{% static 'img/add-svgrepo-com.svg' %}" title="Create Post">
+          </a></li>
+          <li class="nav-items"><a href="{% url 'profile' user.id %}">
+              <img src="{% static 'img/profile-svgrepo-com.svg' %}" title="{{request.user}}">
+          </a></li>
+          <li class="nav-items"><a href="/logout">
+              <img src="{% static 'img/logout-svgrepo-com.svg' %}" title="Logout">
+          </a></li>
+      </ul>
+  </nav>
+</header>
+<br>
+<br>
