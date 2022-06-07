@@ -3,10 +3,9 @@
 {{ block.super}}
 {% load bootstrap4 %}
 
-<br>
 
 <script src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
-<div class="container top">
+<div class="container top mt-4">
   <div class="row">
     <div class="col-md-12">
       <div class="row">
@@ -18,10 +17,10 @@
         <div class="col-md-5 text-left">
           <ul class="list-inline">
             <li class="list-inline-item">
-              <span class="username">{{ profile.user }}</span>
-            </li>
+              <span class="username"><b>Username:</b> {{ profile.user }}</span>
+            </li><br>
             {% if profile.user == user %}
-            <li class="list-inline-item">
+            <li class="list-inline-item mt-3" >
               <a data-toggle="modal" data-target="#edit" href=""><i class="far fa-edit"></i>Edit Profile</a>
             </li>
             {% else %}
@@ -30,7 +29,6 @@
             </li>
             {% endif %}
           </ul>
-
           <ul class="list-inline">
             <li class="list-inline-item">
               <span class="font-weight-bold">{{images|length}}</span> Posts
@@ -44,7 +42,7 @@
           </ul>
           <p class="font3">{{profile.bio}}</p>
           {% if profile.user == user %}
-          <p><a href="{% url 'upload' %}">Add Image</a></p>
+          <p><a href="{% url 'upload' %}"> Create Post</a></p>
           {% endif %}
         </div>
       </div>
