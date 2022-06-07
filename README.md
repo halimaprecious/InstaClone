@@ -27,7 +27,7 @@
 
 ### Installion and Setup instructions
 
-* To view the app.Visit -> [AvechiGram](http://avechigram.herokuapp.com/instagram/)
+* To view the app.Visit -> [InstaClone](https://pgramclone.herokuapp.com/)
 
 1. Clone this repo: git clone https://github.com/halimaprecious/InstaClone.git.
 2. The repo comes in a zipped or compressed format. Extract to your prefered location and open it.
